@@ -10,7 +10,12 @@ describe('status board', () => {
     const html = await res.text();
     expect(res.status).toBe(200);
     expect(html).toContain('TEST-MARKER');
-    expect(html).toContain('2026-10-28');
+    expect(html).toContain('href="/digest/2026-10-28"');
+    expect(html).toContain('href="/digest/2026-10-27"');
+    const newest = await createApp(config).request('/digest/2026-10-28');
+    const older = await createApp(config).request('/digest/2026-10-27');
+    expect(newest.status).toBe(200);
+    expect(older.status).toBe(200);
   });
 
   it('health answers with the lane id', async () => {

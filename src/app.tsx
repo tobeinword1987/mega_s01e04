@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { loadConfig, type RigConfig } from './config.js';
+import { countsForNight } from './digest/counts.js';
 import { loadNight } from './digest/load.js';
 import { lane } from './lane.js';
 import { readStatus } from './status.js';
@@ -12,13 +13,18 @@ export function createApp(config: RigConfig = loadConfig()) {
 
   app.get('/health', (c) => c.json({ ok: true, lane: lane().id }));
 
-  app.get('/', (c) =>
-    c.html(
+  app.get('/', (c) => {
+    const status = readStatus(config);
+    const digests = status.nights.map((night) => ({
+      night,
+      counts: countsForNight(config.runsDir, night),
+    }));
+    return c.html(
       <Layout title="status" lane={lane()}>
-        <StatusBoard status={readStatus(config)} />
+        <StatusBoard status={status} digests={digests} />
       </Layout>,
-    ),
-  );
+    );
+  });
 
   app.get('/digest/:night', (c) => {
     const night = c.req.param('night');
