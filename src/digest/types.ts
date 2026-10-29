@@ -18,9 +18,4 @@ export type NightRead = {
   badLines: number;
 };
 
-// Signature only. The reader lands in issue #2.
-export function readNight(runsDir: string, night: string): NightRead {
-  void runsDir;
-  void night;
-  throw new Error('readNight is not implemented');
-}
+export { readNight } from './read.js';
